@@ -1,4 +1,4 @@
-package de.lucas.lyricsearch
+package de.lucas.musicsearch
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

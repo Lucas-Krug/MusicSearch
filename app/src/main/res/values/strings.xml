@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">LyricSearch</string>
+    <string name="app_name">MusicSearch</string>
+    <string name="songs">Songs</string>
+    <string name="top20">Top 20</string>
 </resources>
