@@ -16,6 +16,8 @@ object Versions {
 
     const val about = "10.0.0-b02"
 
+    const val accompanist = "0.25.1"
+
     const val retrofit = "2.9.0"
 
     const val hilt = "2.42"

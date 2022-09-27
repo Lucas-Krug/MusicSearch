@@ -1,1 +1,1 @@
-C:\Users\Lucas\AndroidStudioProjects\LyricSearch\buildSrc\build\classes\kotlin\main\AppConfig.class;C:\Users\Lucas\AndroidStudioProjects\LyricSearch\buildSrc\build\classes\kotlin\main\Versions.class
+C:\Users\Lucas\AndroidStudioProjects\MusicSearch\buildSrc\build\classes\kotlin\main\AppConfig.class;C:\Users\Lucas\AndroidStudioProjects\MusicSearch\buildSrc\build\classes\kotlin\main\Versions.class

@@ -11,7 +11,7 @@ android {
     compileSdk = AppConfig.targetSdk
 
     defaultConfig {
-        applicationId = "de.lucas.lyricsearch"
+        applicationId = "de.lucas.musicsearch"
         minSdk = AppConfig.minSdk
         targetSdk = AppConfig.targetSdk
         versionCode = AppConfig.versionCode
@@ -66,6 +66,8 @@ dependencies {
 
     implementation("com.jakewharton.timber:timber:${Versions.timber}")
 
+    implementation("com.google.accompanist:accompanist-systemuicontroller:${Versions.accompanist}")
+
     implementation("androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationCompose}")
     implementation("com.google.dagger:hilt-android:${Versions.hilt}")
     kapt("com.google.dagger:hilt-android-compiler:${Versions.hilt}")
@@ -80,6 +82,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}")
 
     implementation("com.squareup.moshi:moshi:${Versions.moshi}")
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.compose}")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.compose}")
 
     testImplementation("junit:junit:${Versions.junit}")
     androidTestImplementation("androidx.test.ext:junit:${Versions.junitExt}")

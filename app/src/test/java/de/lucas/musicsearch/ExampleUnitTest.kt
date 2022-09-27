@@ -1,4 +1,4 @@
-package de.lucas.lyricsearch
+package de.lucas.musicsearch
 
 import org.junit.Test
 
