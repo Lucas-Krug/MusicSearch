@@ -1,0 +1,63 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+
+  desc "checks linting"
+  lane :lintDebug do
+    gradle(task: "lintDebug")
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "builds the debug apk"
+  lane :buildDebug do
+    gradle(task: "assembleDebug")
+  end
+
+ desc "build release apk/aab version"
+  lane :buildRelease do
+    increment_version_code(
+       app_project_dir: '**/app'
+    )
+    gradle(
+       task: "assemble",
+       build_type: "release",
+       print_command: false,
+       properties: {
+            "android.injected.signing.store.file" => ENV["KEYSTORE"],
+            "android.injected.signing.store.password" => ENV["PASSWORD"],
+            "android.injected.signing.key.alias" => ENV["ALIAS"],
+            "android.injected.signing.key.password" => ENV["PASSWORD"]
+       }
+    )
+    gradle(
+           task: "assemble",
+           build_type: "bundleRelease",
+           print_command: false,
+           properties: {
+                "android.injected.signing.store.file" => ENV["KEYSTORE"],
+                "android.injected.signing.store.password" => ENV["PASSWORD"],
+                "android.injected.signing.key.alias" => ENV["ALIAS"],
+                "android.injected.signing.key.password" => ENV["PASSWORD"]
+           }
+        )
+  end
+end

@@ -1,0 +1,45 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+
+      - name: Check linting
+        run: bundle exec fastlane lintDebug
+
+      - name: Run tests
+        run: bundle exec fastlane test
+
+      - name: Build Debug apk
+        run: bundle exec fastlane buildDebug
+
+      - name: Decode Keystore File
+        uses: timheuer/base64-to-file@v1
+        id: android_keystore
+        with:
+          fileName: "musicsearch-keystore.jks"
+          encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: Build release apk/aab
+        run: bundle exec fastlane buildRelease
+        env:
+          KEYSTORE_FILE: ${{ steps.android_keystore.outputs.filePath }}
+          STORE_PASSWORD: ${{ secrets.PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS}}
+          KEY_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: assets
+          path: |
+            ${{ github.workspace }}/app/build/outputs/bundle/release
