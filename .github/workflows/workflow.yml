@@ -20,6 +20,11 @@ jobs:
       - name: Run unit tests
         run: bundle exec fastlane unitTest
 
+  uiTest:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v1
         with:
