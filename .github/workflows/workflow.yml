@@ -17,8 +17,14 @@ jobs:
       - name: Check linting
         run: bundle exec fastlane lintDebug
 
-      - name: Run tests
-        run: bundle exec fastlane test
+      - name: Run unit tests
+        run: bundle exec fastlane unitTest
+
+      - name: Run instrumented tests
+        uses: reactivecircus/android-emulator-runner@v1
+        with:
+          api-level: 24
+          script: ./gradlew connectedCheck
 
   build:
     runs-on: ubuntu-latest

@@ -28,11 +28,6 @@ platform :android do
     gradle(task: "test")
   end
 
-  desc "runs instrumentation tests"
-    lane :uiTest do
-      gradle(task: "assembleDebugAndroidTest")
-    end
-
   desc "builds the debug apk"
   lane :buildDebug do
     gradle(task: "assembleDebug")
