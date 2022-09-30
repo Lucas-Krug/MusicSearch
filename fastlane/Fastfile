@@ -12,6 +12,7 @@
 
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
+opt_out_usage
 
 default_platform(:android)
 
@@ -23,12 +24,12 @@ platform :android do
   end
 
   desc "runs unit tests"
-  lane :test do
+  lane :unitTest do
     gradle(task: "test")
   end
 
   desc "runs instrumentation tests"
-    lane :test do
+    lane :uiTest do
       gradle(task: "assembleDebugAndroidTest")
     end
 
