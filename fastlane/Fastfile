@@ -22,10 +22,15 @@ platform :android do
     gradle(task: "lintDebug")
   end
 
-  desc "Runs all the tests"
+  desc "runs unit tests"
   lane :test do
     gradle(task: "test")
   end
+
+  desc "runs instrumentation tests"
+    lane :test do
+      gradle(task: "assembleDebugAndroidTest")
+    end
 
   desc "builds the debug apk"
   lane :buildDebug do
@@ -42,10 +47,10 @@ platform :android do
        build_type: "release",
        print_command: false,
        properties: {
-            "android.injected.signing.store.file" => ENV["KEYSTORE"],
-            "android.injected.signing.store.password" => ENV["PASSWORD"],
-            "android.injected.signing.key.alias" => ENV["ALIAS"],
-            "android.injected.signing.key.password" => ENV["PASSWORD"]
+            "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+            "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+            "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+            "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
        }
     )
     gradle(
@@ -53,10 +58,10 @@ platform :android do
            build_type: "bundleRelease",
            print_command: false,
            properties: {
-                "android.injected.signing.store.file" => ENV["KEYSTORE"],
-                "android.injected.signing.store.password" => ENV["PASSWORD"],
-                "android.injected.signing.key.alias" => ENV["ALIAS"],
-                "android.injected.signing.key.password" => ENV["PASSWORD"]
+                "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+                "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+                "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+                "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
            }
         )
   end

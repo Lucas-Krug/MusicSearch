@@ -39,16 +39,18 @@ jobs:
         uses: timheuer/base64-to-file@v1
         id: android_keystore
         with:
-          fileName: "musicsearch-keystore.jks"
+          fileName: "key.jks"
           encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
 
       - name: Build release apk/aab
         run: bundle exec fastlane buildRelease
-        env:
-          KEYSTORE_FILE: ${{ steps.android_keystore.outputs.filePath }}
-          STORE_PASSWORD: ${{ secrets.PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ALIAS}}
-          KEY_PASSWORD: ${{ secrets.PASSWORD }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
