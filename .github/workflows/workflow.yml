@@ -38,15 +38,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+    - name: Set up our JDK environment
+      uses: actions/setup-java@v1.4.3
+      with:
+        java-version: 1.8
+
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v1
         with:
-          api-level: 29
+          api-level: 23
+          target: default
+          arch: x86
+          profile: Nexus 6
           script: ./gradlew connectedCheck
 
   build:
     runs-on: ubuntu-latest
-    needs: uiTest
+#    needs: uiTest
     steps:
       - uses: actions/checkout@v2
 
