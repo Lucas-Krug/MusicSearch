@@ -50,8 +50,8 @@ platform :android do
        }
     )
     gradle(
-           task: "assemble",
-           build_type: "bundle",
+           task: "bundle",
+           build_type: "release",
            print_command: false,
            properties: {
                 "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
