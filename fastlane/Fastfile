@@ -33,11 +33,15 @@ platform :android do
     gradle(task: "assembleDebug")
   end
 
- desc "build release apk/aab version"
-  lane :buildRelease do
+  desc "increase versioncode"
+  lane :increaseVersionCode do
     increment_version_code(
        app_project_dir: '**/app'
     )
+  end
+
+ desc "build release apk version"
+ lane :buildReleaseApk do
     gradle(
        task: "assemble",
        build_type: "release",
@@ -61,4 +65,19 @@ platform :android do
            }
         )
   end
+
+   desc "build release bundle version"
+    lane :buildReleaseAab do
+      gradle(
+             task: "bundle",
+             build_type: "release",
+             print_command: false,
+             properties: {
+                  "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+                  "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+                  "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+                  "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+             }
+          )
+    end
 end
