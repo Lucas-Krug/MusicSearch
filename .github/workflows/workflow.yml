@@ -55,7 +55,7 @@ jobs:
   build:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-#    needs: uiTest
+    needs: unitTest
     steps:
       - uses: actions/checkout@v2
 
