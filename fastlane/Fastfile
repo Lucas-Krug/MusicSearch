@@ -1,0 +1,83 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+opt_out_usage
+
+default_platform(:android)
+
+platform :android do
+
+  desc "checks linting"
+  lane :lintDebug do
+    gradle(task: "lintDebug")
+  end
+
+  desc "runs unit tests"
+  lane :unitTest do
+    gradle(task: "test")
+  end
+
+  desc "builds the debug apk"
+  lane :buildDebug do
+    gradle(task: "assembleDebug")
+  end
+
+  desc "increase versioncode"
+  lane :increaseVersionCode do
+    increment_version_code(
+       app_project_dir: '**/app'
+    )
+  end
+
+ desc "build release apk version"
+ lane :buildReleaseApk do
+    gradle(
+       task: "assemble",
+       build_type: "release",
+       print_command: false,
+       properties: {
+            "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+            "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+            "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+            "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+       }
+    )
+    gradle(
+           task: "bundle",
+           build_type: "release",
+           print_command: false,
+           properties: {
+                "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+                "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+                "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+                "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+           }
+        )
+  end
+
+   desc "build release bundle version"
+    lane :buildReleaseAab do
+      gradle(
+             task: "bundle",
+             build_type: "release",
+             print_command: false,
+             properties: {
+                  "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+                  "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+                  "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+                  "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+             }
+          )
+    end
+end

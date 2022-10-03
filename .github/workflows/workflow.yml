@@ -1,0 +1,102 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+
+      - name: Check linting
+        run: bundle exec fastlane lintDebug
+
+  unitTest:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+
+      - name: Run unit tests
+        run: bundle exec fastlane unitTest
+
+#  uiTest:
+#    runs-on: macos-latest
+#    needs: unitTest
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Run instrumented tests
+#        uses: reactivecircus/android-emulator-runner@v1
+#        with:
+#          api-level: 23
+#          target: default
+#          arch: x86
+#          profile: Nexus 6
+#          script: ./gradlew connectedCheck
+
+  build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: unitTest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+
+      - name: Build Debug apk
+        run: bundle exec fastlane buildDebug
+
+      - name: Decode Keystore File
+        uses: timheuer/base64-to-file@v1
+        id: android_keystore
+        with:
+          fileName: "key.jks"
+          encodedString: ${{ secrets.KEYSTORE }}
+
+      - name: Increase Versioncode
+        run: bundle exec fastlane increaseVersionCode
+
+      - name: Build release apk
+        run: bundle exec fastlane buildReleaseApk
+        env:
+          KEYSTORE_FILE: ${{ steps.android_keystore.outputs.filePath }}
+          STORE_PASSWORD: ${{ secrets.PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS}}
+          KEY_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: Build release bundle
+        run: bundle exec fastlane buildReleaseAab
+        env:
+          KEYSTORE_FILE: ${{ steps.android_keystore.outputs.filePath }}
+          STORE_PASSWORD: ${{ secrets.PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS}}
+          KEY_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: assets
+          path: |
+            ${{ github.workspace }}/app/build/outputs/bundle/release
