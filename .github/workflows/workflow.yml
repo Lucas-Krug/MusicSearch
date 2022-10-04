@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - closed
 
 jobs:
   lint:
@@ -53,7 +51,7 @@ jobs:
 #          script: ./gradlew connectedCheck
 
   build:
-    if: github.event.pull_request.merged == true
+    if: ${{ github.ref_name }} == 'main'
     runs-on: ubuntu-latest
     needs: unitTest
     steps:
