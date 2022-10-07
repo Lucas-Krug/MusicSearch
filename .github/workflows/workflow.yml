@@ -98,3 +98,5 @@ jobs:
           name: assets
           path: |
             ${{ github.workspace }}/app/build/outputs/bundle/release
+            ${{ github.workspace }}/app/build/outputs/apk/debug/app-debug.apk
+            ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk

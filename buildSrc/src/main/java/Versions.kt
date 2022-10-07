@@ -19,14 +19,15 @@ object Versions {
     const val accompanist = "0.25.1"
 
     const val retrofit = "2.9.0"
+    const val serializationConverter = "0.8.0"
 
     const val hilt = "2.42"
 
     const val room = "2.4.3"
 
-    const val moshi = "1.14.0"
-
     const val okhttp = "4.10.0"
+
+    const val mockServer = "4.10.0"
 
     const val junit = "4.13.2"
     const val junitExt = "1.1.3"
