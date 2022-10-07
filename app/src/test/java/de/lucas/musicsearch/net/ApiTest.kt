@@ -31,7 +31,7 @@ class ApiTest {
     private lateinit var api: ApiService
 
     private val jsonFile =
-        File("src\\test\\java\\de\\lucas\\musicsearch\\resources\\success_response.json")
+        File("src/test/java/de/lucas/musicsearch/resources/success_response.json")
 
     @OptIn(ExperimentalSerializationApi::class)
     @Before
