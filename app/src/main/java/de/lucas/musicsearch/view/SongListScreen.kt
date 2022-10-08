@@ -25,17 +25,14 @@ import de.lucas.musicsearch.viewmodel.LoadingState
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SongListScreen(
-    songs: SongList?,
+    songs: SongList,
     chartState: Boolean,
-    isLoading: LoadingState,
-    onClickChart: () -> Unit
+    loadingState: LoadingState,
+    onLoadingSongs: () -> Unit
 ) {
-    if (isLoading == LoadingState.LOADING) LoadingIndicator(id = R.string.loadingTop20)
     Column {
         Button(
-            onClick = {
-                onClickChart()
-            },
+            onClick = { if (!chartState) onLoadingSongs() },
             colors = ButtonDefaults.buttonColors(backgroundColor = if (chartState) Gray200 else White),
             border = BorderStroke(1.dp, Gray200),
             shape = RoundedCornerShape(50),
@@ -44,7 +41,11 @@ fun SongListScreen(
         ) {
             Text(text = stringResource(id = R.string.top20))
         }
-        if(songs != null) SongList(songs)
+        if (loadingState == LoadingState.ERROR) {
+            NoInternetScreen(onClickRetry = onLoadingSongs)
+        } else {
+            SongList(songs)
+        }
     }
 }
 
