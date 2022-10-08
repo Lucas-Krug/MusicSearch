@@ -1,6 +1,5 @@
 package de.lucas.musicsearch.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,9 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import de.lucas.musicsearch.R
 import de.lucas.musicsearch.model.api.SongList.Track
 import de.lucas.musicsearch.view.theme.White
@@ -37,11 +39,15 @@ internal fun SongItem(song: Track) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.architects),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(song.images.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = "",
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(48.dp)
                     .weight(1f)
             )
             Column(
@@ -66,7 +72,7 @@ fun SongItemPreview() {
             key = "",
             title = "Title",
             subtitle = "Artist",
-            images = Track.Images(image = "")
+            images = Track.Images(imageUrl = "")
         )
     )
 }

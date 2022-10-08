@@ -81,6 +81,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
     implementation("com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}")
 
+    implementation("io.coil-kt:coil-compose:${Versions.coil}")
+
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.compose}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.compose}")
 

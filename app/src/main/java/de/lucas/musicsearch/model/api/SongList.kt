@@ -23,7 +23,7 @@ data class SongList(
         @SerialName("images")
         data class Images(
             @SerialName("coverart")
-            val image: String
+            val imageUrl: String
         )
     }
 }

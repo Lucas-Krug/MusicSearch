@@ -27,6 +27,8 @@ object Versions {
 
     const val okhttp = "4.10.0"
 
+    const val coil = "2.2.2"
+
     const val mockServer = "4.10.0"
 
     const val junit = "4.13.2"
