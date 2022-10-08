@@ -75,7 +75,7 @@ class ApiTest {
                     title = "Yours",
                     subtitle = "JIN",
                     images = Track.Images(
-                        image = "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/45/ce/0d/45ce0d71-a400-c4d4-253b-299eaf34eb5e/8809829712307.jpg/400x400cc.jpg"
+                        imageUrl = "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/45/ce/0d/45ce0d71-a400-c4d4-253b-299eaf34eb5e/8809829712307.jpg/400x400cc.jpg"
                     )
                 ),
                 Track(
@@ -83,7 +83,7 @@ class ApiTest {
                     title = "Under The Influence",
                     subtitle = "Chris Brown",
                     images = Track.Images(
-                        image = "https://is5-ssl.mzstatic.com/image/thumb/Music122/v4/97/ec/96/97ec963b-8829-f040-fe40-508069d6044b/196589418449.jpg/400x400cc.jpg"
+                        imageUrl = "https://is5-ssl.mzstatic.com/image/thumb/Music122/v4/97/ec/96/97ec963b-8829-f040-fe40-508069d6044b/196589418449.jpg/400x400cc.jpg"
                     )
                 )
             )
