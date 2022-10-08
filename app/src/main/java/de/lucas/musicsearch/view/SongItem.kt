@@ -13,11 +13,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.lucas.musicsearch.R
+import de.lucas.musicsearch.model.api.SongList.Track
 import de.lucas.musicsearch.view.theme.White
 
 @ExperimentalMaterialApi
 @Composable
-internal fun SongItem() {
+internal fun SongItem(song: Track) {
     Card(
         onClick = { },
         modifier = Modifier
@@ -39,14 +40,18 @@ internal fun SongItem() {
             Image(
                 painter = painterResource(id = R.drawable.architects),
                 contentDescription = "",
-                modifier = Modifier.size(40.dp).weight(1f)
+                modifier = Modifier
+                    .size(40.dp)
+                    .weight(1f)
             )
             Column(
                 verticalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(start = 16.dp).weight(4f)
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .weight(4f)
             ) {
-                Text(text = "Gone With The Wind", style = MaterialTheme.typography.body1)
-                Text(text = "Architects", style = MaterialTheme.typography.body2)
+                Text(text = song.title, style = MaterialTheme.typography.body1)
+                Text(text = song.subtitle, style = MaterialTheme.typography.body2)
             }
         }
     }
@@ -56,5 +61,12 @@ internal fun SongItem() {
 @Preview
 @Composable
 fun SongItemPreview() {
-    SongItem()
+    SongItem(
+        Track(
+            key = "",
+            title = "Title",
+            subtitle = "Artist",
+            images = Track.Images(image = "")
+        )
+    )
 }

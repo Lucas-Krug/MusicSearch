@@ -17,7 +17,8 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import retrofit2.*
+import retrofit2.Response
+import retrofit2.Retrofit
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -64,8 +65,8 @@ class ApiTest {
                 .setResponseCode(HttpURLConnection.HTTP_OK)
                 .setBody(MockResponseFileReader(jsonFile).content)
         )
-        val response =
-            format.decodeFromString<SongList>(api.fetchSongsFromServer("charts/track").string())
+        val response = api.fetchTop20SongsFromServer("charts/track", "")
+        val body = format.decodeFromString<SongList>(response.body()!!.string())
 
         val expected = SongList(
             listOf(
@@ -87,17 +88,18 @@ class ApiTest {
                 )
             )
         )
-        Assert.assertEquals(expected, response)
+        Assert.assertEquals(200, response.code())
+        Assert.assertEquals(expected, body)
     }
 
     @Test
     fun noInternetConnection() = runBlocking {
         val response = MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START)
-        var call: ResponseBody? = null
+        var call: Response<ResponseBody>? = null
         server.enqueue(response)
 
         try {
-            call = api.fetchSongsFromServer("charts/track")
+            call = api.fetchTop20SongsFromServer("charts/track", "")
         } catch (e: SocketException) {
             println("No Internet Connection")
             assert(call == null)

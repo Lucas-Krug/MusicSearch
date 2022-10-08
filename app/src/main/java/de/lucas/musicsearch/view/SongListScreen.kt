@@ -2,7 +2,10 @@ package de.lucas.musicsearch.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -14,12 +17,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.lucas.musicsearch.R
+import de.lucas.musicsearch.model.api.SongList
 import de.lucas.musicsearch.view.theme.Gray200
 import de.lucas.musicsearch.view.theme.White
+import de.lucas.musicsearch.viewmodel.LoadingState
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SongListScreen(chartState: Boolean, onClickChart: () -> Unit) {
+fun SongListScreen(
+    songs: SongList?,
+    chartState: Boolean,
+    isLoading: LoadingState,
+    onClickChart: () -> Unit
+) {
+    if (isLoading == LoadingState.LOADING) LoadingIndicator(id = R.string.loadingTop20)
     Column {
         Button(
             onClick = {
@@ -33,19 +44,23 @@ fun SongListScreen(chartState: Boolean, onClickChart: () -> Unit) {
         ) {
             Text(text = stringResource(id = R.string.top20))
         }
-        SongItem()
+        if(songs != null) SongList(songs)
     }
 }
 
 
 @ExperimentalMaterialApi
 @Composable
-internal fun SongList() {
-
+internal fun SongList(songs: SongList) {
+    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+        items(items = songs.tracks, itemContent = { song ->
+            SongItem(song)
+        })
+    }
 }
 
 @Preview
 @Composable
 fun SongListScreenPreview() {
-    SongListScreen(false) {}
+    SongListScreen(SongList(listOf()), false, LoadingState.DEFAULT) {}
 }

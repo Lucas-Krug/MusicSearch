@@ -2,4 +2,5 @@
     <string name="app_name">MusicSearch</string>
     <string name="songs">Songs</string>
     <string name="top20">Top 20</string>
+    <string name="loadingTop20">Loading Top 20 Charts...</string>
 </resources>

@@ -25,7 +25,7 @@ import de.lucas.musicsearch.R
 import de.lucas.musicsearch.model.NavigationItem.*
 import de.lucas.musicsearch.view.theme.roundedShape
 import de.lucas.musicsearch.viewmodel.RootViewModel
-import timber.log.Timber
+import de.lucas.musicsearch.viewmodel.SongListViewModel
 
 @Composable
 fun Root() {
@@ -117,10 +117,11 @@ fun Root() {
             Modifier.padding(innerPadding)
         ) {
             composable(SONGLIST.route) { stackEntry ->
+                val viewModel = hiltViewModel<SongListViewModel>()
+                if (viewModel.charts.tracks.isEmpty()) LaunchedEffect(viewModel) { viewModel.loadChartSongs() }
                 title = SONGLIST.title
-                SongListScreen(rootViewModel.chartState) {
-                    // TODO: Only allow clicking (searching for top20) when chartState false
-                    rootViewModel.chartState = !rootViewModel.chartState
+                SongListScreen(viewModel.charts, viewModel.chartState, viewModel.loadingState) {
+                    if (!viewModel.chartState) viewModel.chartState = true
                 }
             }
             composable(FAVORITES.route) {
