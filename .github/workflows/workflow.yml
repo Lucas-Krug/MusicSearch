@@ -35,23 +35,23 @@ jobs:
       - name: Run unit tests
         run: bundle exec fastlane unitTest
 
-#  uiTest:
-#    runs-on: macos-latest
-#    needs: unitTest
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Run instrumented tests
-#        uses: reactivecircus/android-emulator-runner@v1
-#        with:
-#          api-level: 23
-#          target: default
-#          arch: x86
-#          profile: Nexus 6
-#          script: ./gradlew connectedCheck
+  #  uiTest:
+  #    runs-on: macos-latest
+  #    needs: unitTest
+  #    steps:
+  #      - uses: actions/checkout@v2
+  #
+  #      - name: Run instrumented tests
+  #        uses: reactivecircus/android-emulator-runner@v1
+  #        with:
+  #          api-level: 23
+  #          target: default
+  #          arch: x86
+  #          profile: Nexus 6
+  #          script: ./gradlew connectedCheck
 
   build:
-    if: ${{ github.ref_name }} == 'main'
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: unitTest
     steps:
@@ -98,3 +98,5 @@ jobs:
           name: assets
           path: |
             ${{ github.workspace }}/app/build/outputs/bundle/release
+            ${{ github.workspace }}/app/build/outputs/apk/debug/app-debug.apk
+            ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk

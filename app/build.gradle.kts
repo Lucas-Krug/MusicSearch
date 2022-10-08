@@ -76,16 +76,17 @@ dependencies {
     kapt("androidx.room:room-compiler:${Versions.room}")
 
     implementation("com.squareup.retrofit2:retrofit:${Versions.retrofit}")
-    implementation("com.squareup.retrofit2:converter-moshi:${Versions.retrofit}")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:${Versions.serializationConverter}")
 
     implementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
     implementation("com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}")
 
-    implementation("com.squareup.moshi:moshi:${Versions.moshi}")
+    implementation("io.coil-kt:coil-compose:${Versions.coil}")
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.compose}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.compose}")
 
+    testImplementation("com.squareup.okhttp3:mockwebserver:${Versions.mockServer}")
     testImplementation("junit:junit:${Versions.junit}")
     androidTestImplementation("androidx.test.ext:junit:${Versions.junitExt}")
 }
