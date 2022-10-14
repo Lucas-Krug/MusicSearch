@@ -1,38 +1,60 @@
 package de.lucas.musicsearch
 
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import de.lucas.musicsearch.view.SongListScreen
-import de.lucas.musicsearch.viewmodel.RootViewModel
+import de.lucas.musicsearch.viewmodel.LoadingState
+import de.lucas.musicsearch.viewmodel.SongListViewModel
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 @RunWith(AndroidJUnit4::class)
 class SongListUITest {
 
-    private lateinit var rootViewModel: RootViewModel
+    private var viewModel = SongListViewModel(mockk())
+    private var key = ""
 
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Test
-    fun test_top20_Button() {
+    @Before
+    fun setUpt() {
         composeTestRule.setContent {
-            rootViewModel = RootViewModel()
-            SongListScreen(rootViewModel.chartState) {
-                rootViewModel.chartState = !rootViewModel.chartState
+            SongListScreen(
+                de.lucas.musicsearch.model.SongList(
+                    listOf(
+                        de.lucas.musicsearch.model.SongList.Track(
+                            key = "1234",
+                            title = "Title",
+                            subtitle = "Artist",
+                            images = de.lucas.musicsearch.model.SongList.Track.Images(imageUrl = "")
+                        )
+                    )
+                ), false, LoadingState.DEFAULT, {
+                    if (!viewModel.chartState) {
+                        viewModel.chartState = true
+                    }
+                }) { id ->
+                key = id
             }
         }
+    }
+
+    @Test
+    fun test_top20_Button() {
+        viewModel.chartState = false
         composeTestRule.onNodeWithText("Top 20").performClick()
-        assertEquals(false, rootViewModel.chartState)
+        assertEquals(true, viewModel.chartState)
+    }
+
+    @Test
+    fun test_onClick_SongItem() {
+        composeTestRule.onNodeWithTag("songList").onChildren().onFirst().performClick()
+        assertEquals("1234", key)
     }
 }

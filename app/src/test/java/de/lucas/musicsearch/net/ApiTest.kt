@@ -1,9 +1,15 @@
 package de.lucas.musicsearch.net
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import de.lucas.musicsearch.model.SongDetails
+import de.lucas.musicsearch.model.SongDetails.*
+import de.lucas.musicsearch.model.SongDetails.Section.MetaData
+import de.lucas.musicsearch.model.SongDetails.Section.YoutubeSection
+import de.lucas.musicsearch.model.SongDetails.Section.YoutubeSection.Action
+import de.lucas.musicsearch.model.SongDetails.Section.YoutubeSection.Thumbnail
+import de.lucas.musicsearch.model.SongList
+import de.lucas.musicsearch.model.SongList.Track
 import de.lucas.musicsearch.model.api.ApiService
-import de.lucas.musicsearch.model.api.SongList
-import de.lucas.musicsearch.model.api.SongList.Track
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
@@ -31,8 +37,11 @@ class ApiTest {
 
     private lateinit var api: ApiService
 
-    private val jsonFile =
-        File("src/test/java/de/lucas/musicsearch/resources/success_response.json")
+    private val jsonFileSongList =
+        File("src/test/java/de/lucas/musicsearch/resources/songlist_success_response.json")
+
+    private val jsonFileSongDetails =
+        File("src/test/java/de/lucas/musicsearch/resources/songdetails_success_response.json")
 
     @OptIn(ExperimentalSerializationApi::class)
     @Before
@@ -53,17 +62,17 @@ class ApiTest {
 
     @Test
     fun readJsonFile() {
-        val reader = MockResponseFileReader(jsonFile)
+        val reader = MockResponseFileReader(jsonFileSongList)
         Assert.assertNotNull(reader)
     }
 
     @Test
-    fun testSuccessfulConnection() = runBlocking {
+    fun testSuccessfulConnectionForSongList() = runBlocking {
         val format = Json { ignoreUnknownKeys = true }
         server.enqueue(
             MockResponse()
                 .setResponseCode(HttpURLConnection.HTTP_OK)
-                .setBody(MockResponseFileReader(jsonFile).content)
+                .setBody(MockResponseFileReader(jsonFileSongList).content)
         )
         val response = api.fetchTop20SongsFromServer("charts/track", "")
         val body = format.decodeFromString<SongList>(response.body()!!.string())
@@ -86,6 +95,57 @@ class ApiTest {
                         imageUrl = "https://is5-ssl.mzstatic.com/image/thumb/Music122/v4/97/ec/96/97ec963b-8829-f040-fe40-508069d6044b/196589418449.jpg/400x400cc.jpg"
                     )
                 )
+            )
+        )
+        Assert.assertEquals(200, response.code())
+        Assert.assertEquals(expected, body)
+    }
+
+    @Test
+    fun testSuccessfulConnectionForSongDetails() = runBlocking {
+        val format = Json { ignoreUnknownKeys = true }
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_OK)
+                .setBody(MockResponseFileReader(jsonFileSongDetails).content)
+        )
+        val response =
+            api.fetchSongDetailsFromServer("songs/get-details?key=40333609&locale=en-US", "")
+        val body = format.decodeFromString<SongDetails>(response.body()!!.string())
+        Timber.e(body.toString())
+        val expected = SongDetails(
+            key = "40333609",
+            title = "River Flows In You",
+            subtitle = "Yiruma",
+            images = Images(imageUrl = "https://is2-ssl.mzstatic.com/image/thumb/Music115/v4/5f/f4/9b/5ff49b8c-d0bb-3748-14f4-131edfb332ce/first_love_3000.jpg/400x400cc.jpg"),
+            genres = Genre(genre = "New Age"),
+            sections = listOf(
+                Section(
+                    youtubeSection = null,
+                    metaData = listOf(
+                        MetaData(
+                            title = "Album",
+                            text = "Yiruma 2nd Album 'First Love' (The Original & the Very First Recording)"
+                        ),
+                        MetaData(
+                            title = "Label",
+                            text = "Stomp Music"
+                        ),
+                        MetaData(
+                            title = "Released",
+                            text = "2001"
+                        )
+                    )
+                ),
+                Section(
+                    metaData = null,
+                    youtubeSection = YoutubeSection(
+                        caption = "Yiruma, (이루마) - River Flows in You",
+                        thumbnail = Thumbnail("https://i.ytimg.com/vi/7maJOI3QMu0/maxresdefault.jpg"),
+                        actions = listOf(Action(youtubeUrl = "https://youtu.be/7maJOI3QMu0?autoplay=1"))
+                    )
+                ),
+                Section(metaData = null, youtubeSection = null)
             )
         )
         Assert.assertEquals(200, response.code())

@@ -1,12 +1,12 @@
 object Versions {
     const val gradle = "7.2.2"
-    const val kotlin = "1.7.10"
+    const val kotlin = "1.7.20"
 
     const val core = "1.8.0"
     const val appcompat = "1.5.0"
     const val composeNav = "2.5.1"
     const val compose = "1.2.1"
-    const val composeCompiler = "1.3.0"
+    const val composeCompiler = "1.3.2"
     const val hiltNavigationCompose = "1.0.0"
     const val material = "1.6.1"
 
@@ -29,6 +29,7 @@ object Versions {
 
     const val coil = "2.2.2"
 
+    const val mockk = "1.13.2"
     const val mockServer = "4.10.0"
 
     const val junit = "4.13.2"

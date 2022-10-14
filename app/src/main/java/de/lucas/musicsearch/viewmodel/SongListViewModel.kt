@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.lucas.musicsearch.model.SongController
-import de.lucas.musicsearch.model.api.SongList
+import de.lucas.musicsearch.model.SongList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

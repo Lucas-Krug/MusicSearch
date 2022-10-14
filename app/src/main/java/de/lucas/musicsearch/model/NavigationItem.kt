@@ -9,4 +9,8 @@ enum class NavigationItem(
 ) {
     SONGLIST("songList", R.drawable.ic_lyric, "Songs"),
     FAVORITES("favorites", R.drawable.ic_favorite, "Favorites");
+
+    companion object {
+        const val SONGDETAILS = "songDetails"
+    }
 }

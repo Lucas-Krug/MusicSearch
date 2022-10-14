@@ -1,4 +1,4 @@
-package de.lucas.musicsearch.model.api
+package de.lucas.musicsearch.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

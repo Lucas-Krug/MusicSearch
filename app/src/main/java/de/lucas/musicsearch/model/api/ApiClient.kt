@@ -11,4 +11,10 @@ class ApiClient @Inject constructor(
 
     suspend fun fetchTop20SongsFromServer(): Response<ResponseBody> =
         apiService.fetchTop20SongsFromServer("charts/track", apiConstants.accessKey)
+
+    suspend fun fetchSongDetailsFromServer(key: String): Response<ResponseBody> =
+        apiService.fetchSongDetailsFromServer(
+            url = "songs/get-details?key=$key&locale=en-US",
+            apiConstants.accessKey
+        )
 }

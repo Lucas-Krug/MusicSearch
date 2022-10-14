@@ -2,10 +2,7 @@ package de.lucas.musicsearch.view
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -26,7 +23,9 @@ internal fun LoadingIndicator(@StringRes id: Int) {
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.background(Color.White, shape = RoundedCornerShape(8.dp))
+            modifier = Modifier
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
+                .width(184.dp)
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
