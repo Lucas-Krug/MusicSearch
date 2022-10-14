@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import de.lucas.musicsearch.R
-import de.lucas.musicsearch.model.api.SongList.Track
+import de.lucas.musicsearch.model.SongList.Track
 import de.lucas.musicsearch.view.theme.White
 
 @ExperimentalMaterialApi
 @Composable
-internal fun SongItem(song: Track) {
+internal fun SongItem(song: Track, onClickSong: (String) -> Unit) {
     Card(
-        onClick = { },
+        onClick = { onClickSong(song.key) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
@@ -74,5 +74,5 @@ fun SongItemPreview() {
             subtitle = "Artist",
             images = Track.Images(imageUrl = "")
         )
-    )
+    ) { }
 }

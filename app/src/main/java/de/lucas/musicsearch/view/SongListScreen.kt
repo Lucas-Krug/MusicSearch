@@ -13,11 +13,12 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.lucas.musicsearch.R
-import de.lucas.musicsearch.model.api.SongList
+import de.lucas.musicsearch.model.SongList
 import de.lucas.musicsearch.view.theme.Gray200
 import de.lucas.musicsearch.view.theme.White
 import de.lucas.musicsearch.viewmodel.LoadingState
@@ -28,23 +29,24 @@ fun SongListScreen(
     songs: SongList,
     chartState: Boolean,
     loadingState: LoadingState,
-    onLoadingSongs: () -> Unit
+    onLoadingCharts: () -> Unit,
+    onClickSong: (String) -> Unit
 ) {
     Column {
         Button(
-            onClick = { if (!chartState) onLoadingSongs() },
+            onClick = { if (!chartState) onLoadingCharts() },
             colors = ButtonDefaults.buttonColors(backgroundColor = if (chartState) Gray200 else White),
             border = BorderStroke(1.dp, Gray200),
             shape = RoundedCornerShape(50),
-            modifier = Modifier
-                .padding(start = 8.dp)
+            modifier = Modifier.padding(start = 8.dp)
         ) {
             Text(text = stringResource(id = R.string.top20))
         }
         if (loadingState == LoadingState.ERROR) {
-            NoInternetScreen(onClickRetry = onLoadingSongs)
-        } else {
-            SongList(songs)
+            NoInternetScreen(onClickRetry = onLoadingCharts)
+        }
+        SongList(songs) { key ->
+            onClickSong(key)
         }
     }
 }
@@ -52,10 +54,14 @@ fun SongListScreen(
 
 @ExperimentalMaterialApi
 @Composable
-internal fun SongList(songs: SongList) {
-    LazyColumn(modifier = Modifier.fillMaxHeight()) {
+internal fun SongList(songs: SongList, onClickSong: (String) -> Unit) {
+    LazyColumn(modifier = Modifier
+        .fillMaxHeight()
+        .testTag("songList")) {
         items(items = songs.tracks, itemContent = { song ->
-            SongItem(song)
+            SongItem(song) { key ->
+                onClickSong(key)
+            }
         })
     }
 }
@@ -63,5 +69,5 @@ internal fun SongList(songs: SongList) {
 @Preview
 @Composable
 fun SongListScreenPreview() {
-    SongListScreen(SongList(listOf()), false, LoadingState.DEFAULT) {}
+    SongListScreen(SongList(listOf()), false, LoadingState.DEFAULT, { }) {}
 }

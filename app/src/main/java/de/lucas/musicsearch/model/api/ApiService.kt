@@ -13,4 +13,10 @@ interface ApiService {
         @Url url: String,
         @Header("X-RapidAPI-Key") key: String
     ): Response<ResponseBody>
+
+    @GET
+    suspend fun fetchSongDetailsFromServer(
+        @Url url: String,
+        @Header("X-RapidAPI-Key") key: String
+    ): Response<ResponseBody>
 }

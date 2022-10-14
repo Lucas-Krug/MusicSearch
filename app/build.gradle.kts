@@ -29,7 +29,10 @@ android {
             )
         }
     }
-
+    packagingOptions {
+        exclude("META-INF/LICENSE.md")
+        exclude("META-INF/LICENSE-notice.md")
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -85,6 +88,11 @@ dependencies {
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.compose}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.compose}")
+
+    androidTestImplementation("io.mockk:mockk-android:${Versions.mockk}")
+    testImplementation("io.mockk:mockk:${Versions.mockk}")
+
+    androidTestImplementation("androidx.test.espresso:espresso-intents:${Versions.espresso}")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:${Versions.mockServer}")
     testImplementation("junit:junit:${Versions.junit}")
