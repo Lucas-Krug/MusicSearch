@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.lucas.musicsearch.model.SearchedSong
 import de.lucas.musicsearch.model.SongController
 import de.lucas.musicsearch.model.SongList
 import kotlinx.coroutines.launch
@@ -16,7 +17,7 @@ class SongListViewModel @Inject constructor(
     private val controller: SongController
 ) : ViewModel() {
     var chartState by mutableStateOf(true)
-    var charts by mutableStateOf(SongList(listOf()))
+    var songList by mutableStateOf(SongList(listOf()))
 
     fun loadChartSongs(
         onLoading: () -> Unit,
@@ -24,11 +25,40 @@ class SongListViewModel @Inject constructor(
         onError: () -> Unit
     ) {
         viewModelScope.launch {
-            charts = controller.loadChartSongs(
+            songList = controller.loadChartSongs(
                 onLoading = onLoading,
                 onFinished = onFinished,
                 onError = onError
             ) ?: SongList(listOf())
         }
+    }
+
+    fun loadSearchedSong(
+        searchedText: String,
+        onLoading: () -> Unit,
+        onFinished: () -> Unit,
+        onError: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val searchedSongs = controller.loadSearchedSongs(
+                searchedText = searchedText,
+                onLoading = onLoading,
+                onFinished = onFinished,
+                onError = onError
+            ) ?: SearchedSong(SearchedSong.Tracks(listOf()))
+            songList = parseSearchedSongToSongList(searchedSongs)
+        }
+    }
+
+    private fun parseSearchedSongToSongList(searchedSongs: SearchedSong): SongList {
+        val tracks = searchedSongs.hits.songList.map { song ->
+            SongList.Track(
+                key = song.track.key,
+                title = song.track.title,
+                subtitle = song.track.subtitle,
+                images = SongList.Track.Images(imageUrl = song.track.images.imageUrl)
+            )
+        }
+        return SongList(tracks)
     }
 }

@@ -1,9 +1,13 @@
 package de.lucas.musicsearch.view
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -28,7 +32,6 @@ import androidx.navigation.navArgument
 import de.lucas.musicsearch.R
 import de.lucas.musicsearch.model.NavigationItem.*
 import de.lucas.musicsearch.model.NavigationItem.Companion.SONGDETAILS
-import de.lucas.musicsearch.view.theme.roundedShape
 import de.lucas.musicsearch.viewmodel.LoadingState
 import de.lucas.musicsearch.viewmodel.RootViewModel
 import de.lucas.musicsearch.viewmodel.SongDetailsViewModel
@@ -39,15 +42,14 @@ fun Root() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    var title by remember { mutableStateOf("") }
-    var showBottomNav by remember { mutableStateOf(true) }
-    val rootViewModel: RootViewModel = hiltViewModel()
+    val rootViewModel = hiltViewModel<RootViewModel>()
+    val songListViewModel = hiltViewModel<SongListViewModel>()
     val context = LocalContext.current
     Scaffold(topBar = {
         TopAppBar(
             backgroundColor = Color.White, contentColor = Color.Black, elevation = 0.dp
         ) {
-            if (!showBottomNav) {
+            if (!rootViewModel.showBottomNav) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_back),
@@ -57,15 +59,27 @@ fun Root() {
             }
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
                 Text(
-                    text = title,
+                    text = rootViewModel.title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
+            if (rootViewModel.showSearchView) {
+                Spacer(modifier = Modifier.weight(1f))
+                SearchView(onClickSearch = { searchText ->
+                    songListViewModel.chartState = false
+                    songListViewModel.loadSearchedSong(
+                        searchedText = searchText,
+                        onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
+                        onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
+                        onError = { rootViewModel.loadingState = LoadingState.ERROR }
+                    )
+                })
+            }
         }
     }, bottomBar = {
-        if (showBottomNav) {
+        if (rootViewModel.showBottomNav) {
             BottomNavigation(modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .graphicsLayer {
@@ -106,40 +120,27 @@ fun Root() {
                 }
             }
         }
-    }, floatingActionButton = {
-        if (showBottomNav) {
-            FloatingActionButton(
-                onClick = { /* TODO: open dialog to filter search */ },
-                backgroundColor = MaterialTheme.colors.primary,
-                shape = roundedShape
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_search),
-                    contentDescription = ""
-                )
-            }
-        }
-    }, isFloatingActionButtonDocked = true, floatingActionButtonPosition = FabPosition.Center
-    ) { innerPadding ->
+    }) { innerPadding ->
         NavHost(navController, startDestination = SONGLIST.route, Modifier.padding(innerPadding)) {
             composable(SONGLIST.route) { stackEntry ->
-                val viewModel = hiltViewModel<SongListViewModel>()
-                showBottomNav = true
-                if (viewModel.charts.tracks.isEmpty()) {
-                    LaunchedEffect(viewModel) {
-                        viewModel.loadChartSongs(
+                rootViewModel.showBottomNav = true
+                rootViewModel.showSearchView = true
+                if (songListViewModel.songList.tracks.isEmpty()) {
+                    LaunchedEffect(songListViewModel) {
+                        songListViewModel.loadChartSongs(
                             onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
                             onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
                             onError = { rootViewModel.loadingState = LoadingState.ERROR })
                     }
                 }
-                title = SONGLIST.title
+                rootViewModel.title = SONGLIST.title
                 SongListScreen(
-                    songs = viewModel.charts,
-                    chartState = viewModel.chartState,
+                    songs = songListViewModel.songList,
+                    chartState = songListViewModel.chartState,
                     loadingState = rootViewModel.loadingState,
                     onLoadingCharts = {
-                        viewModel.loadChartSongs(
+                        songListViewModel.chartState = true
+                        songListViewModel.loadChartSongs(
                             onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
                             onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
                             onError = { rootViewModel.loadingState = LoadingState.ERROR })
@@ -150,7 +151,8 @@ fun Root() {
                 )
             }
             composable(FAVORITES.route) {
-                title = FAVORITES.title
+                rootViewModel.showSearchView = false
+                rootViewModel.title = FAVORITES.title
             }
             composable(
                 "$SONGDETAILS/{key}",
@@ -158,8 +160,9 @@ fun Root() {
                 { type = NavType.StringType })
             ) { backStackEntry ->
                 val viewModel = hiltViewModel<SongDetailsViewModel>()
-                showBottomNav = false
-                title = stringResource(id = R.string.details)
+                rootViewModel.showSearchView = false
+                rootViewModel.showBottomNav = false
+                rootViewModel.title = stringResource(id = R.string.details)
                 LaunchedEffect(viewModel) {
                     viewModel.loadSongDetails(
                         key = backStackEntry.arguments?.getString("key") ?: "",

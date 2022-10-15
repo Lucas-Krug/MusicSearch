@@ -59,4 +59,29 @@ class SongController @Inject constructor(
             null
         }
     }
+
+    suspend fun loadSearchedSongs(
+        searchedText: String,
+        onLoading: () -> Unit,
+        onFinished: () -> Unit,
+        onError: () -> Unit
+    ): SearchedSong? {
+        onLoading()
+        val format = Json { ignoreUnknownKeys = true }
+
+        return try {
+            val response = apiClient.fetchSearchedSongFromServer(searchedText)
+
+            if (response.code() == 200) {
+                onFinished()
+                return format.decodeFromString(response.body()!!.string())
+            } else {
+                onError()
+                null
+            }
+        } catch (e: Exception) {
+            onError()
+            null
+        }
+    }
 }

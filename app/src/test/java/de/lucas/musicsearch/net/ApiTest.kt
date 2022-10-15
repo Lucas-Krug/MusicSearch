@@ -1,6 +1,9 @@
 package de.lucas.musicsearch.net
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import de.lucas.musicsearch.model.SearchedSong
+import de.lucas.musicsearch.model.SearchedSong.Tracks
+import de.lucas.musicsearch.model.SearchedSong.Tracks.Song
 import de.lucas.musicsearch.model.SongDetails
 import de.lucas.musicsearch.model.SongDetails.*
 import de.lucas.musicsearch.model.SongDetails.Section.MetaData
@@ -39,9 +42,10 @@ class ApiTest {
 
     private val jsonFileSongList =
         File("src/test/java/de/lucas/musicsearch/resources/songlist_success_response.json")
-
     private val jsonFileSongDetails =
         File("src/test/java/de/lucas/musicsearch/resources/songdetails_success_response.json")
+    private val jsonFileSongSearched =
+        File("src/test/java/de/lucas/musicsearch/resources/songsearch_success_response.json")
 
     @OptIn(ExperimentalSerializationApi::class)
     @Before
@@ -146,6 +150,58 @@ class ApiTest {
                     )
                 ),
                 Section(metaData = null, youtubeSection = null)
+            )
+        )
+        Assert.assertEquals(200, response.code())
+        Assert.assertEquals(expected, body)
+    }
+
+    @Test
+    fun testSuccessfulConnectionForSongSearch() = runBlocking {
+        val format = Json { ignoreUnknownKeys = true }
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_OK)
+                .setBody(MockResponseFileReader(jsonFileSongSearched).content)
+        )
+        val response =
+            api.fetchSearchedSong("search?term=kiss_the_rain&locale=en-US", "")
+        val body = format.decodeFromString<SearchedSong>(response.body()!!.string())
+        Timber.e(body.toString())
+        val expected = SearchedSong(
+            Tracks(
+                listOf(
+                    Song(
+                        Track(
+                            key = "40099833",
+                            title = "Kiss The Rain",
+                            subtitle = "Yiruma",
+                            images = Track.Images(
+                                imageUrl = "https://is3-ssl.mzstatic.com/image/thumb/Music115/v4/0a/d1/e8/0ad1e89c-df29-a43e-9852-eb6ece2dd556/21UMGIM24785.rgb.jpg/400x400cc.jpg"
+                            )
+                        )
+                    ),
+                    Song(
+                        Track(
+                            key = "20066955",
+                            title = "Kiss the Rain",
+                            subtitle = "Billie Myers",
+                            images = Track.Images(
+                                imageUrl = "https://is3-ssl.mzstatic.com/image/thumb/Music114/v4/02/74/5a/02745ac2-cbfb-a90a-b970-7449be5d4c42/06UMGIM10734.rgb.jpg/400x400cc.jpg"
+                            )
+                        )
+                    ),
+                    Song(
+                        Track(
+                            key = "116727774",
+                            title = "Falling In the Sky",
+                            subtitle = "Kiss The Rain",
+                            images = Track.Images(
+                                imageUrl = "https://is2-ssl.mzstatic.com/image/thumb/Music4/v4/ae/74/6f/ae746f79-c0e7-bd13-bdf0-a39cb5fefe12/5051813914621_cover.jpg/400x400cc.jpg"
+                            )
+                        )
+                    )
+                )
             )
         )
         Assert.assertEquals(200, response.code())
