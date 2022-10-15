@@ -62,6 +62,7 @@ fun SearchView(onClickSearch: (String) -> Unit) {
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
+                    cursorColor = Color.Black,
                     focusedIndicatorColor = Gray500,
                     unfocusedIndicatorColor = Gray500,
                     disabledIndicatorColor = Gray500

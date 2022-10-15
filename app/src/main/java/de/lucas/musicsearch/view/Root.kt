@@ -42,7 +42,8 @@ fun Root() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val rootViewModel: RootViewModel = hiltViewModel()
+    val rootViewModel = hiltViewModel<RootViewModel>()
+    val songListViewModel = hiltViewModel<SongListViewModel>()
     val context = LocalContext.current
     Scaffold(topBar = {
         TopAppBar(
@@ -64,10 +65,18 @@ fun Root() {
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            SearchView(onClickSearch = { searchText ->
-
-            })
+            if (rootViewModel.showSearchView) {
+                Spacer(modifier = Modifier.weight(1f))
+                SearchView(onClickSearch = { searchText ->
+                    songListViewModel.chartState = false
+                    songListViewModel.loadSearchedSong(
+                        searchedText = searchText,
+                        onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
+                        onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
+                        onError = { rootViewModel.loadingState = LoadingState.ERROR }
+                    )
+                })
+            }
         }
     }, bottomBar = {
         if (rootViewModel.showBottomNav) {
@@ -114,11 +123,11 @@ fun Root() {
     }) { innerPadding ->
         NavHost(navController, startDestination = SONGLIST.route, Modifier.padding(innerPadding)) {
             composable(SONGLIST.route) { stackEntry ->
-                val viewModel = hiltViewModel<SongListViewModel>()
                 rootViewModel.showBottomNav = true
-                if (viewModel.charts.tracks.isEmpty()) {
-                    LaunchedEffect(viewModel) {
-                        viewModel.loadChartSongs(
+                rootViewModel.showSearchView = true
+                if (songListViewModel.songList.tracks.isEmpty()) {
+                    LaunchedEffect(songListViewModel) {
+                        songListViewModel.loadChartSongs(
                             onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
                             onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
                             onError = { rootViewModel.loadingState = LoadingState.ERROR })
@@ -126,11 +135,12 @@ fun Root() {
                 }
                 rootViewModel.title = SONGLIST.title
                 SongListScreen(
-                    songs = viewModel.charts,
-                    chartState = viewModel.chartState,
+                    songs = songListViewModel.songList,
+                    chartState = songListViewModel.chartState,
                     loadingState = rootViewModel.loadingState,
                     onLoadingCharts = {
-                        viewModel.loadChartSongs(
+                        songListViewModel.chartState = true
+                        songListViewModel.loadChartSongs(
                             onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
                             onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
                             onError = { rootViewModel.loadingState = LoadingState.ERROR })
@@ -141,6 +151,7 @@ fun Root() {
                 )
             }
             composable(FAVORITES.route) {
+                rootViewModel.showSearchView = false
                 rootViewModel.title = FAVORITES.title
             }
             composable(
@@ -149,6 +160,7 @@ fun Root() {
                 { type = NavType.StringType })
             ) { backStackEntry ->
                 val viewModel = hiltViewModel<SongDetailsViewModel>()
+                rootViewModel.showSearchView = false
                 rootViewModel.showBottomNav = false
                 rootViewModel.title = stringResource(id = R.string.details)
                 LaunchedEffect(viewModel) {

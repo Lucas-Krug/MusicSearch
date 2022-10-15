@@ -50,3 +50,25 @@ fun NoInternetScreen(onClickRetry: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun NoSongsFoundScreen() {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_no_songs),
+            contentDescription = "",
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .size(64.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.no_songs_found),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+    }
+}

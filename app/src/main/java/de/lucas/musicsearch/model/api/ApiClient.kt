@@ -17,4 +17,10 @@ class ApiClient @Inject constructor(
             url = "songs/get-details?key=$key&locale=en-US",
             apiConstants.accessKey
         )
+
+    suspend fun fetchSearchedSongFromServer(searchText: String): Response<ResponseBody> =
+        apiService.fetchSongDetailsFromServer(
+            url = "search?term=$searchText&locale=en-US",
+            apiConstants.accessKey
+        )
 }

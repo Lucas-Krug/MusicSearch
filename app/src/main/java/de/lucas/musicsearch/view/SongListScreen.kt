@@ -42,7 +42,9 @@ fun SongListScreen(
         ) {
             Text(text = stringResource(id = R.string.top20))
         }
-        if (loadingState == LoadingState.ERROR) {
+        if (loadingState == LoadingState.ERROR && !chartState) {
+            NoSongsFoundScreen()
+        } else if (loadingState == LoadingState.ERROR) {
             NoInternetScreen(onClickRetry = onLoadingCharts)
         }
         SongList(songs) { key ->
@@ -55,9 +57,11 @@ fun SongListScreen(
 @ExperimentalMaterialApi
 @Composable
 internal fun SongList(songs: SongList, onClickSong: (String) -> Unit) {
-    LazyColumn(modifier = Modifier
-        .fillMaxHeight()
-        .testTag("songList")) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxHeight()
+            .testTag("songList")
+    ) {
         items(items = songs.tracks, itemContent = { song ->
             SongItem(song) { key ->
                 onClickSong(key)
