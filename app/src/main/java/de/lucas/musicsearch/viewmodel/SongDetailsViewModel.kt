@@ -10,14 +10,19 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.lucas.musicsearch.model.DatabaseController
 import de.lucas.musicsearch.model.SongController
 import de.lucas.musicsearch.model.SongDetails
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
-class SongDetailsViewModel @Inject constructor(private val controller: SongController) :
-    ViewModel() {
+class SongDetailsViewModel @Inject constructor(
+    private val controller: SongController,
+    private val dbController: DatabaseController
+) : ViewModel() {
+    var isFavorite = mutableStateOf(false)
     private val default = SongDetails(
         key = "",
         title = "N/A",
@@ -50,5 +55,29 @@ class SongDetailsViewModel @Inject constructor(private val controller: SongContr
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.setPackage("com.google.android.youtube")
         startActivity(context, intent, null)
+    }
+
+    fun setSongAsFavorite(song: SongDetails) {
+        viewModelScope.launch {
+            dbController.setSongAsFavorite(song)
+        }
+    }
+
+    fun removeSongFromFavorite(key: String) {
+        viewModelScope.launch {
+            dbController.removeSongFromFavorite(key)
+        }
+    }
+
+    fun isSongFavorite(key: String) {
+        runBlocking {
+            isFavorite.value = dbController.isSongFavorite(key)
+        }
+    }
+
+    fun getFavoriteSong(key: String) {
+        viewModelScope.launch {
+            songDetails = dbController.getSongDetails(key)
+        }
     }
 }

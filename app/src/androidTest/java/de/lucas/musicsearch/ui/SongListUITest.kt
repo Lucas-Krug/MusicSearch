@@ -1,4 +1,4 @@
-package de.lucas.musicsearch
+package de.lucas.musicsearch.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -23,7 +23,7 @@ class SongListUITest {
     val composeTestRule = createComposeRule()
 
     @Before
-    fun setUpt() {
+    fun setUp() {
         composeTestRule.setContent {
             SongListScreen(
                 de.lucas.musicsearch.model.SongList(

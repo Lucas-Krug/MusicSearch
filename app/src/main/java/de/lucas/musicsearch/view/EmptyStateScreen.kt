@@ -72,3 +72,25 @@ fun NoSongsFoundScreen() {
         )
     }
 }
+
+@Composable
+fun NoFavoritesScreen() {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_no_favorite),
+            contentDescription = "",
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .size(64.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.no_favorites),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+    }
+}

@@ -30,8 +30,8 @@ android {
         }
     }
     packagingOptions {
-        exclude("META-INF/LICENSE.md")
-        exclude("META-INF/LICENSE-notice.md")
+        resources.excludes.add("META-INF/LICENSE.md")
+        resources.excludes.add("META-INF/LICENSE-notice.md")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
