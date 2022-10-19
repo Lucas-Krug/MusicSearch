@@ -22,7 +22,12 @@ import de.lucas.musicsearch.R
 import de.lucas.musicsearch.model.SongDetails
 
 @Composable
-fun SongDetailsScreen(song: SongDetails, goToYoutube: (String) -> Unit) {
+fun SongDetailsScreen(
+    song: SongDetails,
+    isFavorite: Boolean,
+    onClickFavorite: (SongDetails) -> Unit,
+    goToYoutube: (String) -> Unit
+) {
     var label = ""
     var released = ""
     Scaffold { innerPadding ->
@@ -58,9 +63,9 @@ fun SongDetailsScreen(song: SongDetails, goToYoutube: (String) -> Unit) {
                                 .testTag("Title")
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { onClickFavorite(song) }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_favorite),
+                                painter = painterResource(id = if (isFavorite) R.drawable.ic_favorite_added else R.drawable.ic_favorite),
                                 contentDescription = ""
                             )
                         }
@@ -97,6 +102,13 @@ fun SongDetailsScreen(song: SongDetails, goToYoutube: (String) -> Unit) {
                                 )
                             }
                         }
+                    }
+                    /*
+                    * If handled in one forEach and the data is coming from the database,
+                    * the if statement for youtubeSection finishes before the one for the metaData,
+                    * which messes up the intended ui
+                    */
+                    song.sections.forEach { section ->
                         if (section.youtubeSection != null) {
                             Text(
                                 text = "Musicvideo",
@@ -117,16 +129,16 @@ fun SongDetailsScreen(song: SongDetails, goToYoutube: (String) -> Unit) {
                                 style = MaterialTheme.typography.body1,
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
-                            Text(
-                                text = released,
-                                style = MaterialTheme.typography.caption
-                            )
-                            Text(
-                                text = "Label: $label",
-                                style = MaterialTheme.typography.caption
-                            )
                         }
                     }
+                    Text(
+                        text = released,
+                        style = MaterialTheme.typography.caption
+                    )
+                    Text(
+                        text = "Label: $label",
+                        style = MaterialTheme.typography.caption
+                    )
                 }
             }
         }
@@ -145,6 +157,8 @@ fun SongDetailsScreenPreview() {
             genres = SongDetails.Genre("N/A"),
             sections = listOf(),
         ),
+        isFavorite = true,
+        onClickFavorite = {},
         goToYoutube = {}
     )
 }

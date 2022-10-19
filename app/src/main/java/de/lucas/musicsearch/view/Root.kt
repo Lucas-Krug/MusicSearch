@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -32,20 +29,21 @@ import androidx.navigation.navArgument
 import de.lucas.musicsearch.R
 import de.lucas.musicsearch.model.NavigationItem.*
 import de.lucas.musicsearch.model.NavigationItem.Companion.SONGDETAILS
-import de.lucas.musicsearch.viewmodel.LoadingState
-import de.lucas.musicsearch.viewmodel.RootViewModel
-import de.lucas.musicsearch.viewmodel.SongDetailsViewModel
-import de.lucas.musicsearch.viewmodel.SongListViewModel
+import de.lucas.musicsearch.viewmodel.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun Root() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val rootViewModel = hiltViewModel<RootViewModel>()
     val songListViewModel = hiltViewModel<SongListViewModel>()
     val context = LocalContext.current
-    Scaffold(topBar = {
+    Scaffold(scaffoldState = scaffoldState, topBar = {
         TopAppBar(
             backgroundColor = Color.White, contentColor = Color.Black, elevation = 0.dp
         ) {
@@ -152,7 +150,16 @@ fun Root() {
             }
             composable(FAVORITES.route) {
                 rootViewModel.showSearchView = false
+                rootViewModel.showBottomNav = true
                 rootViewModel.title = FAVORITES.title
+                val viewModel = hiltViewModel<FavoriteViewModel>()
+                LaunchedEffect(songListViewModel) {
+                    viewModel.getFavorites()
+                }
+                FavoriteScreen(
+                    songs = viewModel.favoritesList,
+                    onClickSong = { key -> navController.navigate("$SONGDETAILS/$key") }
+                )
             }
             composable(
                 "$SONGDETAILS/{key}",
@@ -164,15 +171,45 @@ fun Root() {
                 rootViewModel.showBottomNav = false
                 rootViewModel.title = stringResource(id = R.string.details)
                 LaunchedEffect(viewModel) {
-                    viewModel.loadSongDetails(
-                        key = backStackEntry.arguments?.getString("key") ?: "",
-                        onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
-                        onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
-                        onError = { rootViewModel.loadingState = LoadingState.ERROR })
+                    viewModel.isSongFavorite(backStackEntry.arguments?.getString("key") ?: "")
+                    if (viewModel.isFavorite.value) {
+                        viewModel.getFavoriteSong(backStackEntry.arguments?.getString("key") ?: "")
+                    } else {
+                        viewModel.loadSongDetails(
+                            key = backStackEntry.arguments?.getString("key") ?: "",
+                            onLoading = { rootViewModel.loadingState = LoadingState.LOADING },
+                            onFinished = { rootViewModel.loadingState = LoadingState.DEFAULT },
+                            onError = { rootViewModel.loadingState = LoadingState.ERROR })
+                    }
                 }
                 if (rootViewModel.loadingState == LoadingState.DEFAULT) {
                     SongDetailsScreen(
                         song = viewModel.songDetails,
+                        isFavorite = viewModel.isFavorite.value,
+                        onClickFavorite = {
+                            viewModel.isFavorite.value = !viewModel.isFavorite.value
+                            if (viewModel.isFavorite.value) {
+                                viewModel.setSongAsFavorite(viewModel.songDetails)
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = "Added to Favorites",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            } else {
+                                viewModel.removeSongFromFavorite(
+                                    backStackEntry.arguments?.getString(
+                                        "key"
+                                    ) ?: ""
+                                )
+                                coroutineScope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = "Removed from Favorites",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        },
                         goToYoutube = { youtubeUrl ->
                             viewModel.goToYoutube(url = youtubeUrl, context = context)
                         }

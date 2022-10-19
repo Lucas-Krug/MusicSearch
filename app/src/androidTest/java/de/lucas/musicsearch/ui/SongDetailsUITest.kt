@@ -1,4 +1,4 @@
-package de.lucas.musicsearch
+package de.lucas.musicsearch.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -6,6 +6,7 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import de.lucas.musicsearch.MainActivity
 import de.lucas.musicsearch.model.SongDetails
 import de.lucas.musicsearch.view.SongDetailsScreen
 import de.lucas.musicsearch.viewmodel.SongDetailsViewModel
@@ -18,7 +19,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SongDetailsUITest {
 
-    private val songDetailsViewModel = SongDetailsViewModel(mockk())
+    private val songDetailsViewModel = SongDetailsViewModel(mockk(), mockk())
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -51,6 +52,8 @@ class SongDetailsUITest {
                         )
                     ),
                 ),
+                isFavorite = false,
+                onClickFavorite = { },
                 goToYoutube = { youtubeUrl ->
                     songDetailsViewModel.goToYoutube(url = youtubeUrl, context = mockk())
                 }

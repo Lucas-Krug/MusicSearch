@@ -1,4 +1,4 @@
-package de.lucas.musicsearch
+package de.lucas.musicsearch.ui
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag

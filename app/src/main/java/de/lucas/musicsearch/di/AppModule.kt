@@ -1,12 +1,16 @@
 package de.lucas.musicsearch.di
 
+import android.content.Context
+import androidx.room.Room
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import de.lucas.musicsearch.model.api.ApiConstants
 import de.lucas.musicsearch.model.api.ApiService
+import de.lucas.musicsearch.model.database.SongDb
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -49,4 +53,18 @@ object AppModule {
     @Singleton
     @Provides
     fun provideAppointmentService(retrofit: Retrofit): ApiService = retrofit.create()
+
+    @Singleton
+    @Provides
+    fun provideDatabase(
+        @ApplicationContext app: Context
+    ) = Room.databaseBuilder(
+        app,
+        SongDb::class.java,
+        "quiz_database"
+    ).build()
+
+    @Singleton
+    @Provides
+    fun provideQuestionDao(db: SongDb) = db.songDao()
 }
