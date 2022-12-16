@@ -17,7 +17,7 @@ data class SongList(
         @SerialName("subtitle")
         val subtitle: String,
         @SerialName("images")
-        val images: Images
+        val images: Images? = null
     ) {
         @Serializable
         @SerialName("images")

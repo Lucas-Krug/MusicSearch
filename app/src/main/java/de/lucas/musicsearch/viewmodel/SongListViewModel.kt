@@ -9,7 +9,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import de.lucas.musicsearch.model.SearchedSong
 import de.lucas.musicsearch.model.SongController
 import de.lucas.musicsearch.model.SongList
+import de.lucas.musicsearch.model.SongList.Track.Images
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +32,7 @@ class SongListViewModel @Inject constructor(
                 onFinished = onFinished,
                 onError = onError
             ) ?: SongList(listOf())
+            Timber.e(songList.toString())
         }
     }
 
@@ -56,7 +59,7 @@ class SongListViewModel @Inject constructor(
                 key = song.track.key,
                 title = song.track.title,
                 subtitle = song.track.subtitle,
-                images = SongList.Track.Images(imageUrl = song.track.images.imageUrl)
+                images = Images(imageUrl = song.track.images?.imageUrl ?: "")
             )
         }
         return SongList(tracks)
