@@ -32,7 +32,7 @@ fun SongDetails.toSongDbItem(): SongDbItem {
         key = this.key,
         title = this.title,
         artist = this.subtitle,
-        imageUrl = this.images.imageUrl,
+        imageUrl = this.images?.imageUrl ?: "",
         genre = this.genres.genre,
         youtubeCaption = youtubeCaption,
         youtubeThumbnail = youtubeThumbnail,

@@ -12,7 +12,7 @@ data class SongDetails(
     @SerialName("subtitle")
     val subtitle: String,
     @SerialName("images")
-    val images: Images,
+    val images: Images? = null,
     @SerialName("genres")
     val genres: Genre,
     @SerialName("sections")

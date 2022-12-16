@@ -41,7 +41,7 @@ internal fun SongItem(song: Track, onClickSong: (String) -> Unit) {
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(song.images.imageUrl)
+                    .data(song.images?.imageUrl)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.ic_placeholder),

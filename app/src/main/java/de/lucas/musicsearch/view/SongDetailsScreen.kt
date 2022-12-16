@@ -38,7 +38,7 @@ fun SongDetailsScreen(
                 .background(Color.Black)
         ) {
             AsyncImage(
-                model = song.images.imageUrl,
+                model = song.images?.imageUrl,
                 contentDescription = "",
                 modifier = Modifier.weight(1f)
             )
